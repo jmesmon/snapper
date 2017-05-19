@@ -93,7 +93,18 @@ if test "x$with_lvm" = "xyes"; then
 	AC_DEFINE(ENABLE_LVM, 1, [Enable LVM thin-provisioned snapshots support])
 fi
 
-if test "x$with_btrfs" != "xyes" -a "x$with_lvm" != "xyes" -a "x$with_ext4" != "xyes"; then
+AC_ARG_ENABLE([zfs], AC_HELP_STRING([--disable-zfs],[Disable ZFS snapshots support]),
+		[with_zfs=$enableval],[with_zfs=yes])
+
+AM_CONDITIONAL(ENABLE_ZFS, [test "x$with_zfs" = "xyes"])
+
+if test "x$with_zfs" = "xyes"; then
+	AC_DEFINE(ENABLE_ZFS, 1, [Enable ZFS snapshots support])
+	PKG_CHECK_MODULES(LIBZFS_CORE, libzfs_core)
+fi
+
+
+if test "x$with_btrfs" != "xyes" -a "x$with_lvm" != "xyes" -a "x$with_ext4" != "xyes" -a "x$with_zfs" != "xyes"; then
 	AC_MSG_ERROR([You have to enable at least one snapshot type (remove some --disable-xxx parameter)])
 fi
 

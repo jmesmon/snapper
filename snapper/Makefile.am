@@ -3,8 +3,11 @@
 #
 
 AM_CXXFLAGS = -D_FILE_OFFSET_BITS=64
-
 AM_CPPFLAGS = -I/usr/include/libxml2
+
+if ENABLE_ZFS
+AM_CPPFLAGS += $(LIBZFS_CORE_CFLAGS)
+endif
 
 lib_LTLIBRARIES = libsnapper.la
 
@@ -51,6 +54,11 @@ libsnapper_la_SOURCES +=				\
 	LvmCache.cc		LvmCache.h
 endif
 
+if ENABLE_ZFS
+libsnapper_la_SOURCES +=				\
+	Zfs.cc			Zfs.h
+endif
+
 if ENABLE_ROLLBACK
 libsnapper_la_SOURCES +=				\
 	MntTable.cc		MntTable.h
@@ -66,6 +74,10 @@ libsnapper_la_LIBADD = -lboost_thread -lboost_system -lxml2 -lacl -lz -lm
 if ENABLE_ROLLBACK
 libsnapper_la_LIBADD += -lmount
 endif
+if ENABLE_ZFS
+libsnapper_la_LIBADD += $(LIBZFS_CORE_LIBS)
+endif
+
 
 pkgincludedir = $(includedir)/snapper
 
